@@ -16,6 +16,7 @@ const App = () => {
 				barStyle={"light-content"}
 				translucent
 				showHideTransition="fade"
+				backgroundColor={"#006ae9"}
 			/>
 
 			<View style={styles.container}>
