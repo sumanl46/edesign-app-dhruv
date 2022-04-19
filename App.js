@@ -7,11 +7,13 @@
  */
 
 import React from "react";
-import { SafeAreaView, StatusBar, StyleSheet, View, Text } from "react-native";
+import { SafeAreaView, StatusBar, StyleSheet } from "react-native";
+import Container from "./src/components";
+import { MainContextProvider } from "./src/contexts/MainContext";
 
 const App = () => {
 	return (
-		<SafeAreaView>
+		<SafeAreaView style={styles.container}>
 			<StatusBar
 				barStyle={"light-content"}
 				translucent
@@ -19,21 +21,17 @@ const App = () => {
 				backgroundColor={"#006ae9"}
 			/>
 
-			<View style={styles.container}>
-				<Text>Welcome</Text>
-			</View>
+			<MainContextProvider>
+				<Container />
+			</MainContextProvider>
 		</SafeAreaView>
 	);
 };
+export default App;
 
 const styles = StyleSheet.create({
 	container: {
-		width: "100%",
-		height: "100%",
-		backgroundColor: "#FFFFFF",
-		justifyContent: "center",
-		alignItems: "center",
+		flex: 1,
+		paddingTop: StatusBar.currentHeight,
 	},
 });
-
-export default App;
