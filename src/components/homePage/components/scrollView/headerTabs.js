@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
 
-function HeaderTabs({ focused, tabs }) {
+function HeaderTabs({ focused, tabs, onClick }) {
 	return (
 		<View style={styles.container}>
 			<ScrollView
@@ -11,7 +11,7 @@ function HeaderTabs({ focused, tabs }) {
 				{tabs.map((tab, index) => (
 					<Pressable
 						key={index}
-						onPress={() => console.log(tab)}
+						onPress={() => onClick(index)}
 						style={{
 							marginLeft:
 								index > 0 && index <= tabs.length - 1 ? 20 : 0,
