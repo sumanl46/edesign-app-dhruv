@@ -13,7 +13,7 @@ export default function Container() {
 					<Stack.Screen
 						name="Home"
 						component={HomePage}
-						options={{ title: "Welcome" }}
+						options={{ headerShown: false }}
 					/>
 				</Stack.Navigator>
 			</NavigationContainer>
