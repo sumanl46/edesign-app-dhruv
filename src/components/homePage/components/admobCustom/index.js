@@ -16,7 +16,8 @@ export default function AdmobView() {
 
 	const loadAdImage = async () => {
 		const __image = {
-			url: "https://designsmaz.com/wp-content/uploads/2016/03/Cat-with-Sunglasses-Background.jpg",
+			url: require("../../assets/images/linus-sandvide-5DIFvVwe6wk-unsplash.jpg"),
+			// url: "https://designsmaz.com/wp-content/uploads/2016/03/Cat-with-Sunglasses-Background.jpg",
 			loaded: false,
 			adUrl: "https://designsmaz.com/wp-content/uploads/2016/03/Cat-with-Sunglasses-Background.jpg",
 		};
@@ -30,50 +31,52 @@ export default function AdmobView() {
 
 	if (image.url) {
 		return (
-			<View style={styles.container}>
-				{/* Absolute view before the image is loaded */}
-				{image.loaded ? null : (
-					<View
+			<View style={styles._}>
+				<View style={styles.container}>
+					{/* Absolute view before the image is loaded */}
+					{image.loaded ? null : (
+						<View
+							style={[
+								styles.absolute,
+								{
+									backgroundColor: "#F1F3F4",
+									zIndex: 10,
+								},
+							]}></View>
+					)}
+
+					<Image
+						source={image.url}
+						onLoad={() => {
+							setImage({
+								...image,
+								loaded: true,
+							});
+						}}
+						resizeMethod="auto"
+						resizeMode="cover"
+						style={{ width: "100%", height: "100%" }}
+					/>
+
+					{/* Button */}
+					<TouchableOpacity
 						style={[
 							styles.absolute,
-							{
-								backgroundColor: "#F1F3F4",
-								zIndex: 10,
-							},
-						]}></View>
-				)}
+							{ backgroundColor: "transparent", zIndex: 20 },
+						]}
+						onPress={async () => {
+							const canOpen = await Linking.canOpenURL(
+								image.adUrl,
+							);
 
-				<Image
-					source={{
-						uri: image.url,
-					}}
-					onLoad={() => {
-						setImage({
-							...image,
-							loaded: true,
-						});
-					}}
-					resizeMethod="auto"
-					resizeMode="cover"
-					style={{ width: "100%", height: "100%" }}
-				/>
-
-				{/* Button */}
-				<TouchableOpacity
-					style={[
-						styles.absolute,
-						{ backgroundColor: "transparent", zIndex: 20 },
-					]}
-					onPress={async () => {
-						const canOpen = await Linking.canOpenURL(image.adUrl);
-
-						if (canOpen) {
-							Linking.openURL(image.adUrl);
-						} else {
-							console.log(canOpen);
-						}
-					}}
-					activeOpacity={0.8}></TouchableOpacity>
+							if (canOpen) {
+								Linking.openURL(image.adUrl);
+							} else {
+								console.log(canOpen);
+							}
+						}}
+						activeOpacity={0.8}></TouchableOpacity>
+				</View>
 			</View>
 		);
 	} else {
@@ -82,6 +85,12 @@ export default function AdmobView() {
 }
 
 const styles = StyleSheet.create({
+	_: {
+		position: "relative",
+		width: "100%",
+		height: "auto",
+		paddingHorizontal: 20,
+	},
 	container: {
 		position: "relative",
 		width: "100%",

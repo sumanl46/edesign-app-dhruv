@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
 	container: {
 		height: "auto",
 		overflow: "hidden",
+		paddingHorizontal: 20,
 	},
 	box: {
 		position: "relative",

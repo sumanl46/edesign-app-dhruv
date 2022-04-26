@@ -12,12 +12,13 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "auto",
 		paddingVertical: 10,
-		paddingHorizontal: 20,
+		paddingHorizontal: 0,
 	},
 	searchContainer: {
 		flexDirection: "column",
 		justifyContent: "center",
 		alignItems: "center",
+		paddingHorizontal: 20,
 	},
 	appLogo: {
 		position: "relative",

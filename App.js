@@ -8,8 +8,10 @@
 
 import React from "react";
 import { SafeAreaView, StatusBar, StyleSheet } from "react-native";
-import Container from "./src/components";
+import { NavigationContainer } from "@react-navigation/native";
+
 import { MainContextProvider } from "./src/contexts/MainContext";
+import Container from "./src/components";
 
 const App = () => {
 	return (
@@ -21,9 +23,11 @@ const App = () => {
 				backgroundColor={"#006ae9"}
 			/>
 
-			<MainContextProvider>
-				<Container />
-			</MainContextProvider>
+			<NavigationContainer>
+				<MainContextProvider>
+					<Container />
+				</MainContextProvider>
+			</NavigationContainer>
 		</SafeAreaView>
 	);
 };

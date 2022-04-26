@@ -7,11 +7,13 @@ export function MainContextProvider({ children }) {
 		color: "#3498DB",
 		b_r: 14,
 		f_s: 14,
+		drawerOpened: false,
 	});
 
 	return (
 		<MainContext.Provider
 			value={{
+				drawerOpened: appData.drawerOpened,
 				appDatas: [appData, setAppData],
 			}}>
 			{children}

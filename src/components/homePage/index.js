@@ -1,7 +1,8 @@
 import React from "react";
 import {
-	View,
 	Text,
+	View,
+	Image,
 	ScrollView,
 	ImageBackground,
 	TouchableOpacity,
@@ -10,22 +11,25 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { styles } from "./assets/styles/styles";
 import AdmobView from "./components/admobCustom";
 import PopularsTemplates from "./components/popularTemplates";
-import CustomScrollView from "./components/scrollView";
-
-const COLOR = "#006ae9";
+import TemplatesContainer from "./components/templates";
 
 const HomePage = () => {
 	return (
 		<ScrollView
 			showsVerticalScrollIndicator={false}
 			nestedScrollEnabled
-			style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
+			style={{ flex: 1, backgroundColor: "#f7f7f7" }}>
 			<View style={styles.container}>
 				{/* Top Part */}
 				<View style={[styles.box, styles.searchContainer]}>
 					{/* App logo */}
 					<View style={styles.appLogo}>
-						<Text>App Logo Goes Here</Text>
+						<Image
+							source={require("./assets/images/app_image.jpg")}
+							resizeMethod="auto"
+							resizeMode="contain"
+							style={{ width: "100%", height: "100%" }}
+						/>
 					</View>
 
 					{/* Search box */}
@@ -34,9 +38,8 @@ const HomePage = () => {
 							style={{
 								flex: 1,
 							}}
-							source={{
-								uri: "https://images.unsplash.com/photo-1488415032361-b7e238421f1b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80",
-							}}
+							source={require("./assets/images/alexander-andrews-yOIT88xWkbg-unsplash.jpg")}
+							// "https://images.unsplash.com/photo-1488415032361-b7e238421f1b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
 							resizeMethod="scale"
 							resizeMode="cover">
 							{/* Black Background */}
@@ -103,7 +106,7 @@ const HomePage = () => {
 					<AdmobView />
 
 					{/* All Templates */}
-					<CustomScrollView />
+					<TemplatesContainer />
 				</View>
 			</View>
 		</ScrollView>
