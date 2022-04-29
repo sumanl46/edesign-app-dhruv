@@ -24,18 +24,8 @@ export default function Container() {
 
 	const navigation = useNavigation();
 
-	const { drawerOpened, appDatas } = useContext(MainContext);
+	const { drawerOpened, tabs, appDatas } = useContext(MainContext);
 	const [appData, setAppData] = appDatas;
-
-	const tabs = [
-		"Nepali Congress",
-		"Holi",
-		"New Year",
-		"Diwali",
-		"Bada Dashain",
-		"MCC",
-		"Vote TO Balen",
-	];
 
 	const navigationView = () => (
 		<View style={[styles.container, styles.navigationContainer]}>
@@ -58,7 +48,7 @@ export default function Container() {
 							activeOpacity={0.7}
 							onPress={async () => {
 								await navigation.navigate("Search", {
-									tab: e,
+									tab: e.key,
 								});
 
 								drawer.current.closeDrawer();
@@ -80,7 +70,7 @@ export default function Container() {
 									fontWeight: "600",
 									color: "#000000AA",
 								}}>
-								{e}
+								{e.title}
 							</Text>
 						</TouchableOpacity>
 					))}

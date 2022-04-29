@@ -8,50 +8,26 @@ import {
 	TouchableOpacity,
 } from "react-native";
 
+import firestore from "@react-native-firebase/firestore";
+
 export default function PopularsTemplates() {
 	const [images, setImages] = useState([]);
 
 	const loadImages = async () => {
-		const __images = [
-			{
-				url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWQPTpIrUXsndB_-G8fybL1_lja4iSvBEHw&usqp=CAU",
-				loaded: false,
-			},
-			{
-				url: "https://images.unsplash.com/photo-1488415032361-b7e238421f1b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80",
-				loaded: false,
-			},
-			{
-				url: "https://designsmaz.com/wp-content/uploads/2016/03/Cat-with-Sunglasses-Background.jpg",
-				loaded: false,
-			},
-			{
-				url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWQPTpIrUXsndB_-G8fybL1_lja4iSvBEHw&usqp=CAU",
-				loaded: false,
-			},
-			{
-				url: "https://images.unsplash.com/photo-1488415032361-b7e238421f1b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80",
-				loaded: false,
-			},
-			{
-				url: "https://designsmaz.com/wp-content/uploads/2016/03/Cat-with-Sunglasses-Background.jpg",
-				loaded: false,
-			},
-			{
-				url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWQPTpIrUXsndB_-G8fybL1_lja4iSvBEHw&usqp=CAU",
-				loaded: false,
-			},
-			{
-				url: "https://images.unsplash.com/photo-1488415032361-b7e238421f1b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80",
-				loaded: false,
-			},
-			{
-				url: "https://designsmaz.com/wp-content/uploads/2016/03/Cat-with-Sunglasses-Background.jpg",
-				loaded: false,
-			},
-		];
+		const __images = await firestore()
+			.collection("templates")
+			.where("popular", "==", true)
+			.orderBy("createdAt", "desc")
+			.limit(30)
+			.get();
 
-		await setImages([...__images]);
+		if (__images.empty) {
+			return;
+		} else {
+			setImages(
+				__images.docs.map(doc => ({ ...doc.data(), id: doc.id })),
+			);
+		}
 	};
 
 	useEffect(() => {
@@ -94,7 +70,7 @@ export default function PopularsTemplates() {
 										marginLeft:
 											index > 0 &&
 											index <= images.length - 1
-												? 20
+												? 12
 												: 0,
 									},
 								]}
@@ -118,7 +94,7 @@ export default function PopularsTemplates() {
 								{/* Image */}
 								<Image
 									source={{
-										uri: image.url,
+										uri: image.image,
 									}}
 									onLoad={() => {
 										const __images = [...images];
@@ -154,7 +130,7 @@ const styles = StyleSheet.create({
 		height: 70,
 		borderRadius: 999,
 		borderWidth: 1,
-		borderColor: "#F1F3F4",
+		borderColor: "lightgrey",
 		overflow: "hidden",
 	},
 });

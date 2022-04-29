@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "198069383748",
+    "project_id": "e-design-aa9eb",
+    "storage_bucket": "e-design-aa9eb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:198069383748:android:e295a7813b04fb23b54211",
+        "android_client_info": {
+          "package_name": "com.edesign"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "198069383748-io4sihapg0gapc1pb9vum71m4pcaeekr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDh1wHYPL0zazNriIho9S6ExMmhd1qUxgs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "198069383748-io4sihapg0gapc1pb9vum71m4pcaeekr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-9113830558683757~1775114506"
+    }
+  ],
+  "configuration_version": "1"
+}

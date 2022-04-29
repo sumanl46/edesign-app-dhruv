@@ -1,14 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import { styles } from "./styles/mainStyle";
 import {
-	View,
 	Text,
+	View,
+	Image,
 	Animated,
 	Keyboard,
 	Platform,
 	TextInput,
 	Pressable,
 	Dimensions,
+	StyleSheet,
 	ScrollView,
 	TouchableOpacity,
 	KeyboardAvoidingView,
@@ -27,9 +29,28 @@ export default function SearchPage({ navigation, route }) {
 	const [search, setSearch] = useState("");
 	const [animated, setAnimated] = useState(false);
 
+	const __images = [
+		{
+			url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWQPTpIrUXsndB_-G8fybL1_lja4iSvBEHw&usqp=CAU",
+			loaded: false,
+		},
+		{
+			url: "https://images.unsplash.com/photo-1488415032361-b7e238421f1b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80",
+			loaded: false,
+		},
+		{
+			url: "https://designsmaz.com/wp-content/uploads/2016/03/Cat-with-Sunglasses-Background.jpg",
+			loaded: false,
+		},
+	];
+
 	// Run at first run,
 	useEffect(() => {
 		const { tab: k } = route.params;
+
+		if (k.length > 0) {
+			setAnimated(true);
+		}
 
 		setSearch(k);
 	}, []);
@@ -99,7 +120,11 @@ export default function SearchPage({ navigation, route }) {
 										setSearch(e);
 
 										if (e.length > 0) {
-											setAnimated(true);
+											if (animated) {
+												return;
+											} else {
+												setAnimated(true);
+											}
 										} else {
 											setAnimated(false);
 										}
@@ -118,7 +143,12 @@ export default function SearchPage({ navigation, route }) {
 										},
 									]}>
 									<Pressable
-										onPress={() => setSearch("")}
+										onPress={() => {
+											setSearch("");
+											setAnimated(false);
+
+											searchRef.current.focus();
+										}}
 										style={styles.clearSearchFieldIcon}>
 										<Feather
 											name="x"
@@ -147,6 +177,30 @@ export default function SearchPage({ navigation, route }) {
 								</Text>
 							</Pressable>
 						</View>
+					</View>
+
+					{/* FlatList below search bar */}
+					<View style={styles.flatListContainer}>
+						<ScrollView style={{ flex: 1 }}>
+							<View style={styles.renderedBoxesContainer}>
+								{__images.map((item, index) => (
+									<View
+										style={styles.renderedBox}
+										key={index}>
+										<View style={styles.box}>
+											<Image
+												source={{ uri: item.url }}
+												resizeMethod="auto"
+												resizeMode="cover"
+												style={
+													StyleSheet.absoluteFillObject
+												}
+											/>
+										</View>
+									</View>
+								))}
+							</View>
+						</ScrollView>
 					</View>
 				</View>
 			</TouchableWithoutFeedback>

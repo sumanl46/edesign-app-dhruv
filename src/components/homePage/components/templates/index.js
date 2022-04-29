@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import {
 	Text,
 	View,
@@ -10,6 +10,9 @@ import {
 	ScrollView,
 	TouchableOpacity,
 } from "react-native";
+
+import firestore from "@react-native-firebase/firestore";
+
 import { MainContext } from "../../../../contexts/MainContext";
 
 const { width: WIDTH, height: HEIGHT } = Dimensions.get("screen");
@@ -19,82 +22,36 @@ const SCROLLVIEW_HEIGHT = HEIGHT - STATUSBAR_HEIGHT - 20; // 20 is for padding v
 const SCROLLVIEW_WIDTH = WIDTH - 40; // 40 is for padding horizontal of 20-20
 const SCROLLVIEW_WIDTH_HALF = SCROLLVIEW_WIDTH / 2;
 
-const COLOR = "#006ae9";
+// const COLOR = "#006ae9";
 
 export default function TemplatesContainer({ navigation }) {
 	const { appDatas } = useContext(MainContext);
 	const [appData, setAppData] = appDatas;
 
-	const [allTemplates, setAllTemplates] = useState([
-		{
-			ad: false,
-			image: require("../../assets/images/karsten-winegeart-oU6KZTXhuvk-unsplash.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/pexels-felix-mittermeier-957061.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/andrei-korostyliov--5svGQJwrU0-unsplash.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/marek-szturc-n3qWOO_WO3E-unsplash.jpg"),
-		},
-		{
-			ad: true,
-			image: require("../../assets/images/aleksey-kuprikov-sKJH-nRnthg-unsplash.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/aleksey-kuprikov-sKJH-nRnthg-unsplash.png"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/andrei-korostyliov--5svGQJwrU0-unsplash.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/ashley-knedler-Pf5Pj7A5ddA-unsplash.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/stefano-zocca-zjaOb2kOk_8-unsplash.jpg"),
-		},
-		{
-			ad: true,
-			image: require("../../assets/images/timothy-salter-hewitt-v6SaSuhC6kc-unsplash.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/daniel-leone-g30P1zcOzXo-unsplash.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/tim-swaan-eOpewngf68w-unsplash.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/josiah-pauls-XpM3UKpzBeQ-unsplash.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/linus-sandvide-5DIFvVwe6wk-unsplash.jpg"),
-		},
-		{
-			ad: true,
-			image: require("../../assets/images/manuel-will-gd3t5Dtbwkw-unsplash.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/vincent-ledvina-zZsBlaGwJiw-unsplash.jpg"),
-		},
-		{
-			ad: false,
-			image: require("../../assets/images/ray-hennessy-xUUZcpQlqpM-unsplash.jpg"),
-		},
-	]);
+	const [allTemplates, setAllTemplates] = useState([]);
+
+	const loadTemplates = async () => {
+		const templates = await firestore()
+			.collection("templates")
+			.limit(30)
+			.orderBy("createdAt", "desc")
+			.get();
+
+		if (templates.empty) return;
+		else {
+			setAllTemplates(
+				templates.docs.map(doc => ({
+					...doc.data(),
+					id: doc.id,
+					ad: false,
+				})),
+			);
+		}
+	};
+
+	React.useEffect(() => {
+		loadTemplates();
+	}, []);
 
 	return (
 		<View style={styles.container}>
@@ -181,15 +138,14 @@ export default function TemplatesContainer({ navigation }) {
 				<ScrollView
 					style={{ flex: 1 }}
 					nestedScrollEnabled
-					showsVerticalScrollIndicator={false}
-					snapToAlignment="center">
+					showsVerticalScrollIndicator={false}>
 					<View style={styles.templates}>
 						{allTemplates.map((template, id) =>
 							template.ad ? (
-								<View style={styles.adBox} key={id}>
+								<View style={styles.adBox} key={template.id}>
 									<View style={styles.box}>
 										<Image
-											source={template.image}
+											source={{ uri: template.image }}
 											resizeMethod="auto"
 											resizeMode="cover"
 											style={{
@@ -214,10 +170,12 @@ export default function TemplatesContainer({ navigation }) {
 									</View>
 								</View>
 							) : (
-								<View style={styles.templateBox} key={id}>
+								<View
+									style={[styles.templateBox]}
+									key={template.id}>
 									<View style={styles.box}>
 										<Image
-											source={template.image}
+											source={{ uri: template.image }}
 											resizeMethod="auto"
 											resizeMode="cover"
 											style={{

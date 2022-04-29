@@ -7,29 +7,31 @@ import {
 	TouchableOpacity,
 } from "react-native";
 
+import firestore from "@react-native-firebase/firestore";
+
 export default function AdmobView() {
-	const [image, setImage] = useState({
-		url: null,
-		loaded: false,
-		adUrl: null,
-	});
+	const [image, setImage] = useState(null);
 
 	const loadAdImage = async () => {
-		const __image = {
-			url: require("../../assets/images/linus-sandvide-5DIFvVwe6wk-unsplash.jpg"),
-			// url: "https://designsmaz.com/wp-content/uploads/2016/03/Cat-with-Sunglasses-Background.jpg",
-			loaded: false,
-			adUrl: "https://designsmaz.com/wp-content/uploads/2016/03/Cat-with-Sunglasses-Background.jpg",
-		};
+		const __image = await firestore()
+			.collection("ads")
+			.where("pinned", "==", true)
+			.get();
 
-		await setImage(__image);
+		if (__image.empty) {
+			return;
+		} else {
+			setImage({ ...__image.docs[0].data(), id: __image.docs[0].id });
+		}
 	};
 
 	useEffect(() => {
 		loadAdImage();
 	}, []);
 
-	if (image.url) {
+	if (image) {
+		console.log(image);
+
 		return (
 			<View style={styles._}>
 				<View style={styles.container}>
@@ -46,7 +48,7 @@ export default function AdmobView() {
 					)}
 
 					<Image
-						source={image.url}
+						source={{ uri: image.thumbnail }}
 						onLoad={() => {
 							setImage({
 								...image,
@@ -66,11 +68,11 @@ export default function AdmobView() {
 						]}
 						onPress={async () => {
 							const canOpen = await Linking.canOpenURL(
-								image.adUrl,
+								image.link,
 							);
 
 							if (canOpen) {
-								Linking.openURL(image.adUrl);
+								Linking.openURL(image.link);
 							} else {
 								console.log(canOpen);
 							}

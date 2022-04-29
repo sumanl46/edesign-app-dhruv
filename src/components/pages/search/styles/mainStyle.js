@@ -1,4 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions, StatusBar } from "react-native";
+
+const { height: H, width: W } = Dimensions.get("screen");
 
 const styles = StyleSheet.create({
 	container: {
@@ -68,6 +70,35 @@ const styles = StyleSheet.create({
 		height: 20,
 		backgroundColor: "#000",
 		borderRadius: 24,
+	},
+	flatListContainer: {
+		width: "100%",
+		height: H - StatusBar.currentHeight - 50,
+		backgroundColor: "transparent",
+	},
+	renderedBoxesContainer: {
+		flex: 1,
+		flexDirection: "row",
+		flexWrap: "wrap",
+		justifyContent: "flex-start",
+		backgroundColor: "#F1F3F4",
+	},
+	renderedBox: {
+		padding: 5,
+		width: "50%",
+		height: W / 2,
+	},
+	box: {
+		width: "100%",
+		height: "100%",
+		borderRadius: 10,
+		overflow: "hidden",
+		borderWidth: 1,
+		borderColor: "#F1F3F4",
+		backgroundColor: "slightgrey",
+		flexDirection: "row",
+		justifyContent: "center",
+		alignItems: "center",
 	},
 });
 

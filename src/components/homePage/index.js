@@ -3,17 +3,159 @@ import {
 	Text,
 	View,
 	Image,
+	Modal,
+	Linking,
+	FlatList,
+	Pressable,
+	StyleSheet,
+	Dimensions,
 	ScrollView,
 	ImageBackground,
 	TouchableOpacity,
 } from "react-native";
+
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { styles } from "./assets/styles/styles";
 import AdmobView from "./components/admobCustom";
 import PopularsTemplates from "./components/popularTemplates";
 import TemplatesContainer from "./components/templates";
 
-const HomePage = () => {
+import firestore from "@react-native-firebase/firestore";
+
+const { width: WIDTH } = Dimensions.get("screen");
+
+const HomePage = ({ navigation }) => {
+	const [newsData, setNewsData] = React.useState([]);
+	const [showModal, setShowModal] = React.useState(false);
+
+	const loadNewsData = async () => {
+		const news = await firestore().collection("news").get();
+
+		if (news.empty) {
+			return;
+		} else {
+			setNewsData(news.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+		}
+	};
+
+	React.useEffect(() => {
+		loadNewsData();
+	}, []);
+
+	const NewsItem = ({ item }) => {
+		return (
+			<View
+				style={{
+					position: "relative",
+					padding: 10,
+					width: "50%",
+					height: WIDTH / 2,
+				}}>
+				<View
+					style={{
+						position: "relative",
+						flex: 1,
+						borderRadius: 10,
+						borderWidth: 1,
+						borderColor: "lightgrey",
+						justifyContent: "center",
+						alignItems: "center",
+						overflow: "hidden",
+					}}>
+					<Image
+						source={{ uri: item.thumbnail }}
+						resizeMethod="auto"
+						resizeMode="cover"
+						style={{
+							position: "absolute",
+							width: "100%",
+							height: "100%",
+							left: 0,
+							top: 0,
+							zIndex: 10,
+						}}
+					/>
+
+					<TouchableOpacity
+						activeOpacity={0.8}
+						style={{
+							position: "relative",
+							width: "100%",
+							height: "100%",
+							zIndex: 20,
+						}}
+						onPress={async () => {
+							const canBeOpened = await Linking.canOpenURL(
+								item.url,
+							);
+
+							if (canBeOpened) {
+								await Linking.openURL(item.url);
+							} else {
+								return;
+							}
+						}}
+					/>
+				</View>
+			</View>
+		);
+	};
+
+	const ModalView = () => {
+		return (
+			<View style={styles.modal}>
+				{/* Close modal when clicking outside the view box */}
+				<TouchableOpacity
+					activeOpacity={1}
+					onPress={() => setShowModal(false)}
+					style={[
+						StyleSheet.absoluteFillObject,
+						{
+							zIndex: 20,
+						},
+					]}></TouchableOpacity>
+
+				<View
+					style={[
+						styles.modalContent,
+						{
+							zIndex: 30,
+						},
+					]}>
+					<View style={styles.modalHeading}>
+						<View
+							style={{
+								position: "relative",
+								flexDirection: "column",
+								alignItems: "center",
+							}}>
+							<Text style={styles.modalHeadingText}>
+								All News Sources
+							</Text>
+
+							<View style={styles.modalHeadingBar}></View>
+						</View>
+					</View>
+
+					<View
+						style={{
+							position: "relative",
+							width: "100%",
+							height: "80%",
+						}}>
+						<FlatList
+							numColumns={2}
+							showsVerticalScrollIndicator={false}
+							data={newsData}
+							keyExtractor={item => item.id}
+							renderItem={NewsItem}
+						/>
+					</View>
+				</View>
+			</View>
+		);
+	};
+
 	return (
 		<ScrollView
 			showsVerticalScrollIndicator={false}
@@ -68,7 +210,11 @@ const HomePage = () => {
 								<TouchableOpacity
 									style={styles.search}
 									activeOpacity={0.9}
-									onPress={() => {}}>
+									onPress={() =>
+										navigation.navigate("Search", {
+											tab: "",
+										})
+									}>
 									{/* Search Icon Container */}
 									<View
 										style={{
@@ -105,10 +251,84 @@ const HomePage = () => {
 					{/* Admob Custom */}
 					<AdmobView />
 
+					{/* Remove Background Link && News Show Button */}
+					<View
+						style={{
+							position: "relative",
+							width: "100%",
+							height: "auto",
+							marginTop: 20,
+							paddingHorizontal: 20,
+							flexDirection: "row",
+							justifyContent: "space-between",
+							alignItems: "center",
+						}}>
+						<Pressable
+							onPress={async () => {
+								const __url = "https://www.remove.bg/";
+								const canOpen = await Linking.canOpenURL(__url);
+
+								if (canOpen) {
+									Linking.openURL(__url);
+								} else {
+									return;
+								}
+							}}
+							style={{
+								width: "60%",
+								marginRight: "4%",
+								height: 50,
+								borderRadius: 12,
+								flexDirection: "row",
+								justifyContent: "center",
+								alignItems: "center",
+								backgroundColor: "#3498DB",
+							}}>
+							<Text
+								style={{
+									color: "white",
+									fontWeight: "700",
+									fontSize: 14,
+								}}>
+								Remove Background
+							</Text>
+						</Pressable>
+
+						<Pressable
+							onPress={() => setShowModal(true)}
+							style={{
+								width: "36%",
+								height: 50,
+								borderRadius: 12,
+								flexDirection: "row",
+								justifyContent: "center",
+								alignItems: "center",
+								backgroundColor: "#3498DB",
+							}}>
+							<Text
+								style={{
+									color: "white",
+									fontWeight: "700",
+									fontSize: 14,
+								}}>
+								News
+							</Text>
+						</Pressable>
+					</View>
+
 					{/* All Templates */}
 					<TemplatesContainer />
 				</View>
 			</View>
+
+			{/* News Modal */}
+			<Modal
+				transparent
+				animationType="fade"
+				onRequestClose={() => setShowModal(false)}
+				visible={showModal}>
+				<ModalView />
+			</Modal>
 		</ScrollView>
 	);
 };

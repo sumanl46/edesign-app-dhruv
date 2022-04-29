@@ -20,7 +20,7 @@ const App = () => {
 				barStyle={"light-content"}
 				translucent
 				showHideTransition="fade"
-				backgroundColor={"#006ae9"}
+				backgroundColor={"#3498DB"}
 			/>
 
 			<NavigationContainer>
