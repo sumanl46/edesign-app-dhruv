@@ -30,8 +30,6 @@ export default function AdmobView() {
 	}, []);
 
 	if (image) {
-		console.log(image);
-
 		return (
 			<View style={styles._}>
 				<View style={styles.container}>

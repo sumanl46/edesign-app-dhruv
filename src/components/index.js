@@ -14,6 +14,7 @@ import {
 import HomePage from "./homePage";
 import { MainContext } from "../contexts/MainContext";
 import { SearchPage } from "./pages";
+import EditorPage from "./pages/editor";
 
 const Stack = createNativeStackNavigator();
 const WIDTH = Dimensions.get("screen").width;
@@ -101,15 +102,25 @@ export default function Container() {
 					});
 				}}
 				renderNavigationView={navigationView}>
-				<Stack.Navigator>
+				<Stack.Navigator initialRouteName="Editor">
+					{/* Home Page */}
 					<Stack.Screen
 						name="Home"
 						component={HomePage}
 						options={{ headerShown: false }}
 					/>
+
+					{/* Search Page */}
 					<Stack.Screen
 						name="Search"
 						component={SearchPage}
+						options={{ headerShown: false }}
+					/>
+
+					{/* Editor Page */}
+					<Stack.Screen
+						name="Editor"
+						component={EditorPage}
 						options={{ headerShown: false }}
 					/>
 				</Stack.Navigator>

@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import { styles } from "./styles/mainStyle";
 import {
 	Text,
 	View,
@@ -17,7 +16,9 @@ import {
 	TouchableWithoutFeedback,
 } from "react-native";
 
+import firestore from "@react-native-firebase/firestore";
 import Feather from "react-native-vector-icons/Feather";
+import { styles } from "./styles/mainStyle";
 
 const { width: WIDTH, height: HEIGHT } = Dimensions.get("screen");
 
@@ -28,6 +29,9 @@ export default function SearchPage({ navigation, route }) {
 
 	const [search, setSearch] = useState("");
 	const [animated, setAnimated] = useState(false);
+
+	const [popularSearches, setPopularSearches] = useState(null);
+	const [crrSearchList, setCrrSearchList] = useState([]);
 
 	const __images = [
 		{
@@ -44,6 +48,19 @@ export default function SearchPage({ navigation, route }) {
 		},
 	];
 
+	const getPopularSearches = async () => {
+		const response = await firestore()
+			.collection("search_tags")
+			.doc("tags")
+			.get();
+
+		if (response.exists) {
+			setPopularSearches({ ...response.data() });
+		} else {
+			return;
+		}
+	};
+
 	// Run at first run,
 	useEffect(() => {
 		const { tab: k } = route.params;
@@ -53,6 +70,7 @@ export default function SearchPage({ navigation, route }) {
 		}
 
 		setSearch(k);
+		getPopularSearches();
 	}, []);
 
 	useEffect(() => {
@@ -115,11 +133,25 @@ export default function SearchPage({ navigation, route }) {
 									keyboardType="web-search"
 									returnKeyLabel="Go"
 									returnKeyType="search"
+									autoFocus
 									defaultValue={search}
 									onChangeText={e => {
 										setSearch(e);
 
 										if (e.length > 0) {
+											const searchesLists =
+												popularSearches.tags.filter(
+													t => {
+														return (
+															t.indexOf(e) > -1
+														);
+													},
+												);
+
+											setCrrSearchList([
+												...searchesLists,
+											]);
+
 											if (animated) {
 												return;
 											} else {
@@ -177,6 +209,97 @@ export default function SearchPage({ navigation, route }) {
 								</Text>
 							</Pressable>
 						</View>
+
+						{/* Recent Search List */}
+						{search.length <= 0 ? (
+							<View style={styles.searchListContainer}>
+								{/* Title */}
+								<View style={styles.searchTitleContainer}>
+									<Text style={styles.searchTitleText}>
+										Popular Searches
+									</Text>
+								</View>
+
+								{/* Lists */}
+								<View style={styles.searchLists}>
+									{popularSearches &&
+										popularSearches.tags.map(
+											(tag, index) =>
+												index <= 10 && (
+													<View
+														key={index}
+														style={{
+															position:
+																"relative",
+															width: "auto",
+															height: "auto",
+															padding: 4,
+														}}>
+														<View
+															style={
+																styles.searchListBox
+															}>
+															<Text
+																style={
+																	styles.searchListBoxText
+																}>
+																{tag}
+															</Text>
+														</View>
+													</View>
+												),
+										)}
+								</View>
+							</View>
+						) : (
+							<View style={styles.crrSearchLists}>
+								{crrSearchList.length > 0 &&
+									crrSearchList.map(
+										(srch, index) =>
+											index <= 10 && (
+												<View
+													key={index}
+													style={{
+														position: "relative",
+														width: "100%",
+														height: "auto",
+														paddingVertical: 8,
+														paddingHorizontal: 25,
+														borderBottomWidth: 1,
+														borderBottomColor:
+															"#F1F3F4",
+														backgroundColor: "#FFF",
+													}}>
+													<View
+														style={
+															styles.crrSearchListBox
+														}>
+														<View
+															style={
+																styles.crrSearchListBox
+															}>
+															<Feather
+																name="search"
+																size={22}
+																color="#888"
+															/>
+
+															<Text
+																style={[
+																	styles.searchListBoxText,
+																	{
+																		marginLeft: 20,
+																	},
+																]}>
+																{srch}
+															</Text>
+														</View>
+													</View>
+												</View>
+											),
+									)}
+							</View>
+						)}
 					</View>
 
 					{/* FlatList below search bar */}
