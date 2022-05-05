@@ -15,6 +15,7 @@ import HomePage from "./homePage";
 import { MainContext } from "../contexts/MainContext";
 import { SearchPage } from "./pages";
 import EditorPage from "./pages/editor";
+import AddText from "./pages/addText";
 
 const Stack = createNativeStackNavigator();
 const WIDTH = Dimensions.get("screen").width;
@@ -121,6 +122,13 @@ export default function Container() {
 					<Stack.Screen
 						name="Editor"
 						component={EditorPage}
+						options={{ headerShown: false }}
+					/>
+
+					{/* Add Text Page */}
+					<Stack.Screen
+						name="AddText"
+						component={AddText}
 						options={{ headerShown: false }}
 					/>
 				</Stack.Navigator>
