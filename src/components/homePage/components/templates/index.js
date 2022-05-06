@@ -25,8 +25,8 @@ const SCROLLVIEW_WIDTH_HALF = SCROLLVIEW_WIDTH / 2;
 // const COLOR = "#006ae9";
 
 export default function TemplatesContainer({ navigation }) {
-	const { appDatas } = useContext(MainContext);
-	const [appData, setAppData] = appDatas;
+	const { mainData } = useContext(MainContext);
+	const [contextData, setContextData] = mainData;
 
 	const [allTemplates, setAllTemplates] = useState([]);
 
@@ -104,8 +104,8 @@ export default function TemplatesContainer({ navigation }) {
 					}}>
 					<Pressable
 						onPress={() => {
-							setAppData({
-								...appData,
+							setContextData({
+								...contextData,
 								drawerOpened: true,
 							});
 						}}>

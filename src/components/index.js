@@ -26,8 +26,8 @@ export default function Container() {
 
 	const navigation = useNavigation();
 
-	const { drawerOpened, tabs, appDatas } = useContext(MainContext);
-	const [appData, setAppData] = appDatas;
+	const { drawerOpened, tabs, mainData } = useContext(MainContext);
+	const [contextData, setContextData] = mainData;
 
 	const navigationView = () => (
 		<View style={[styles.container, styles.navigationContainer]}>
@@ -97,8 +97,8 @@ export default function Container() {
 				drawerBackgroundColor={"#F1F3F4"}
 				drawerPosition={"left"}
 				onDrawerClose={() => {
-					setAppData({
-						...appData,
+					setContextData({
+						...contextData,
 						drawerOpened: false,
 					});
 				}}
@@ -121,6 +121,11 @@ export default function Container() {
 					{/* Editor Page */}
 					<Stack.Screen
 						name="Editor"
+						initialParams={{
+							template: {
+								image: "https://wallpaperaccess.com/full/1204217.jpg",
+							},
+						}}
 						component={EditorPage}
 						options={{ headerShown: false }}
 					/>

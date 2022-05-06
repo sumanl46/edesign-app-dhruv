@@ -9,9 +9,11 @@
 import React from "react";
 import { SafeAreaView, StatusBar, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import "react-native-gesture-handler";
 
 import { MainContextProvider } from "./src/contexts/MainContext";
 import Container from "./src/components";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const App = () => {
 	return (
@@ -23,11 +25,13 @@ const App = () => {
 				backgroundColor={"#3498DB"}
 			/>
 
-			<NavigationContainer>
-				<MainContextProvider>
-					<Container />
-				</MainContextProvider>
-			</NavigationContainer>
+			<GestureHandlerRootView style={{ flex: 1 }}>
+				<NavigationContainer>
+					<MainContextProvider>
+						<Container />
+					</MainContextProvider>
+				</NavigationContainer>
+			</GestureHandlerRootView>
 		</SafeAreaView>
 	);
 };
