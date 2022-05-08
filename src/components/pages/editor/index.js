@@ -53,8 +53,6 @@ export default function EditorPage({ navigation, route }) {
 
 	const [imgWH, setImgWH] = useState({
 		calculated: false,
-		width: 0,
-		height: 0,
 	});
 
 	const [textUpdate, setTextUpdate] = useState(false);
@@ -182,9 +180,9 @@ export default function EditorPage({ navigation, route }) {
 		saveShotImage.current
 			.capture()
 			.then(uri => {
-				navigation.navigate("save-image", {
-					imageUri: uri,
-					template: template,
+				navigation.navigate("SaveImage", {
+					uri,
+					template,
 				});
 
 				setCapturing(false);
@@ -342,45 +340,51 @@ export default function EditorPage({ navigation, route }) {
 	// }, [contextData.overImage]);
 
 	const calcImgHeight = async (_w, _h) => {
-		const diff = _w - _h;
-		let wd = WIDTH;
-		let ht = WIDTH;
-		if (diff >= 0) {
-			const wr = (80 / 100) * WIDTH;
-			wd = WIDTH > _w ? wr : WIDTH;
+		const DIFF = MAIN_CONT_HEIGHT - WIDTH;
 
-			if (diff < MAIN_CONT_HEIGHT - 50) {
-				const r = (diff / (_w - diff / 2)) * 100;
-				ht = WIDTH - (r / 100) * WIDTH;
+		// Initial width and height values
+		let width = WIDTH;
+		let height = WIDTH;
+
+		if (_w >= _h) {
+			if (_w > WIDTH) {
+				width = WIDTH;
+				const sub = ((_w - WIDTH) / _w) * 100;
+				height = _h - (sub / 100) * _h;
 			} else {
-				const r = (diff / _w) * 100;
-				ht = WIDTH - (r / 100) * WIDTH;
+				width = WIDTH;
+				const sub = ((WIDTH - _w) / _w) * 100;
+				height = _h + (sub / 100) * _h;
 			}
 		} else {
-			const d = -diff;
-			if (d <= MAIN_CONT_HEIGHT) {
-				wd = (80 / 100) * WIDTH;
-				const r = (diff / _h) * 100;
-				ht = WIDTH + (r / 100) * WIDTH;
+			if (_h >= MAIN_CONT_HEIGHT) {
+				height = MAIN_CONT_HEIGHT;
+				const sub = ((_h - MAIN_CONT_HEIGHT) / _h) * 100;
+				width = _w - (sub / 100) * _w;
 			} else {
-				wd = (80 / 100) * WIDTH;
-				ht = MAIN_CONT_HEIGHT;
+				if (MAIN_CONT_HEIGHT - _h >= DIFF) {
+					height = (80 / 100) * MAIN_CONT_HEIGHT;
+					width = _w - (MAIN_CONT_HEIGHT - _h);
+				} else {
+					height = MAIN_CONT_HEIGHT;
+					width = _w + (MAIN_CONT_HEIGHT - _h);
+				}
 			}
 		}
 
-		await console.log({ wd, ht, _w, _h });
-
-		await setImgWH({
-			...imgWH,
-			calculated: true,
-			width: wd,
-			height: ht,
-		});
+		return { width, height };
 	};
 
 	useEffect(() => {
-		Image.getSize(template.image, (width, height) => {
-			calcImgHeight(400, 300);
+		Image.getSize(template.image, async (wd, ht) => {
+			const { width, height } = await calcImgHeight(wd, ht);
+
+			setImgWH({
+				...imgWH,
+				calculated: true,
+				width,
+				height,
+			});
 		});
 	}, []);
 
@@ -433,19 +437,19 @@ export default function EditorPage({ navigation, route }) {
 				) : null}
 
 				{/* ViewShot container */}
-				{imgWH.calculated ? (
-					<View
-						style={{
-							position: "relative",
-							width: "100%",
-							height: MAIN_CONT_HEIGHT,
-							maxHeight: MAIN_CONT_HEIGHT,
-							overflow: "hidden",
-							flexDirection: "row",
-							justifyContent: "center",
-							alignItems: "center",
-							backgroundColor: "#FFFFFF",
-						}}>
+				<View
+					style={{
+						position: "relative",
+						width: "100%",
+						height: MAIN_CONT_HEIGHT,
+						maxHeight: MAIN_CONT_HEIGHT,
+						overflow: "hidden",
+						flexDirection: "row",
+						justifyContent: "center",
+						alignItems: "center",
+						backgroundColor: "#FFFFFF",
+					}}>
+					{imgWH.calculated ? (
 						<View
 							style={{
 								position: "relative",
@@ -458,7 +462,7 @@ export default function EditorPage({ navigation, route }) {
 								ref={saveShotImage}
 								options={{
 									format: "png",
-									result: "data-uri",
+									result: "base64",
 									quality: 0.9,
 								}}
 								style={{
@@ -506,9 +510,6 @@ export default function EditorPage({ navigation, route }) {
 												}>
 												<Text
 													onPress={() => {
-														console.log(
-															textProp.txtId,
-														);
 														setEdit(true);
 
 														setFocusedTextId(
@@ -576,8 +577,8 @@ export default function EditorPage({ navigation, route }) {
 								) : null}
 							</ViewShot>
 						</View>
-					</View>
-				) : null}
+					) : null}
+				</View>
 
 				{/* flex btns */}
 				<View

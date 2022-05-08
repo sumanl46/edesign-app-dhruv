@@ -1,4 +1,5 @@
 import React, { createContext, useState } from "react";
+import { PermissionsAndroid } from "react-native";
 import firestore from "@react-native-firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -7,9 +8,8 @@ export const MainContext = createContext();
 export function MainContextProvider({ children }) {
 	const [contextData, setContextData] = useState({
 		color: "#3498DB",
-		overImage: "https://wallpaperaccess.com/full/1204217.jpg",
-		resizableImage: require("../components/homePage/assets/images/ashley-knedler-Pf5Pj7A5ddA-unsplash.jpg"),
-		drawerOpened: false,
+		overImage: null,
+		resizableImage: null,
 		tabs: [],
 	});
 
@@ -44,15 +44,36 @@ export function MainContextProvider({ children }) {
 			.catch(error => console.log(error));
 	};
 
+	// Check Permission for READ && WRITE file
+	const checkPermission = async () => {
+		await PermissionsAndroid.check(
+			PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+		).then(isPermitted => {
+			if (isPermitted) {
+				console.log(isPermitted);
+			} else {
+				PermissionsAndroid.request(
+					PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+					{
+						rationale: {
+							message: "Please give access to Save Image.",
+							title: "Storage Permission",
+						},
+					},
+				).then(msg => console.log(msg));
+			}
+		});
+	};
+
 	React.useEffect(() => {
 		loadTabs();
 		setImageData();
+		checkPermission();
 	}, []);
 
 	return (
 		<MainContext.Provider
 			value={{
-				drawerOpened: contextData.drawerOpened,
 				tabs: contextData.tabs,
 				textData: [textProps, setTextProps],
 				mainData: [contextData, setContextData],

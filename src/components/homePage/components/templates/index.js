@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useContext } from "react";
 import {
 	Text,
 	View,
@@ -13,8 +13,6 @@ import {
 
 import firestore from "@react-native-firebase/firestore";
 
-import { MainContext } from "../../../../contexts/MainContext";
-
 const { width: WIDTH, height: HEIGHT } = Dimensions.get("screen");
 const STATUSBAR_HEIGHT = StatusBar.currentHeight;
 
@@ -24,10 +22,7 @@ const SCROLLVIEW_WIDTH_HALF = SCROLLVIEW_WIDTH / 2;
 
 // const COLOR = "#006ae9";
 
-export default function TemplatesContainer({ navigation }) {
-	const { mainData } = useContext(MainContext);
-	const [contextData, setContextData] = mainData;
-
+export default function TemplatesContainer({ navigation, showTabsModal }) {
 	const [allTemplates, setAllTemplates] = useState([]);
 
 	const loadTemplates = async () => {
@@ -102,13 +97,7 @@ export default function TemplatesContainer({ navigation }) {
 						justifyContent: "center",
 						alignItems: "center",
 					}}>
-					<Pressable
-						onPress={() => {
-							setContextData({
-								...contextData,
-								drawerOpened: true,
-							});
-						}}>
+					<Pressable onPress={showTabsModal}>
 						<View
 							style={{
 								position: "relative",
@@ -140,7 +129,7 @@ export default function TemplatesContainer({ navigation }) {
 					nestedScrollEnabled
 					showsVerticalScrollIndicator={false}>
 					<View style={styles.templates}>
-						{allTemplates.map((template, id) =>
+						{allTemplates.map(template =>
 							template.ad ? (
 								<View style={styles.adBox} key={template.id}>
 									<View style={styles.box}>
@@ -190,7 +179,11 @@ export default function TemplatesContainer({ navigation }) {
 
 										<TouchableOpacity
 											activeOpacity={0.7}
-											onPress={() => {}}
+											onPress={() => {
+												navigation.navigate("Editor", {
+													template,
+												});
+											}}
 											style={{
 												position: "relative",
 												zIndex: 20,

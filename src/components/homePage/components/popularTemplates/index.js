@@ -10,7 +10,7 @@ import {
 
 import firestore from "@react-native-firebase/firestore";
 
-export default function PopularsTemplates() {
+export default function PopularsTemplates({ navigation }) {
 	const [images, setImages] = useState([]);
 
 	const loadImages = async () => {
@@ -62,7 +62,7 @@ export default function PopularsTemplates() {
 					showsHorizontalScrollIndicator={false}
 					horizontal>
 					{images.length > 0 &&
-						images.map((image, index) => (
+						images.map((template, index) => (
 							<TouchableOpacity
 								style={[
 									styles.box,
@@ -74,11 +74,15 @@ export default function PopularsTemplates() {
 												: 0,
 									},
 								]}
-								onPress={() => console.log(index)}
+								onPress={() =>
+									navigation.navigate("Editor", {
+										template,
+									})
+								}
 								activeOpacity={0.8}
 								key={index}>
 								{/* When Image is not loaded */}
-								{image.loaded ? null : (
+								{template.loaded ? null : (
 									<View
 										style={{
 											position: "absolute",
@@ -94,7 +98,7 @@ export default function PopularsTemplates() {
 								{/* Image */}
 								<Image
 									source={{
-										uri: image.image,
+										uri: template.image,
 									}}
 									onLoad={() => {
 										const __images = [...images];

@@ -8,7 +8,6 @@ import {
 	Platform,
 	TextInput,
 	Pressable,
-	Dimensions,
 	StyleSheet,
 	ScrollView,
 	TouchableOpacity,
@@ -19,8 +18,6 @@ import {
 import firestore from "@react-native-firebase/firestore";
 import Feather from "react-native-vector-icons/Feather";
 import { styles } from "./styles/mainStyle";
-
-const { width: WIDTH, height: HEIGHT } = Dimensions.get("screen");
 
 export default function SearchPage({ navigation, route }) {
 	const searchRef = useRef(null);
@@ -143,7 +140,9 @@ export default function SearchPage({ navigation, route }) {
 												popularSearches.tags.filter(
 													t => {
 														return (
-															t.indexOf(e) > -1
+															t.indexOf(
+																e.toLowerCase(),
+															) > -1
 														);
 													},
 												);
@@ -235,7 +234,14 @@ export default function SearchPage({ navigation, route }) {
 															height: "auto",
 															padding: 4,
 														}}>
-														<View
+														<Pressable
+															onPress={() => {
+																setSearch(tag);
+
+																setCrrSearchList(
+																	[],
+																);
+															}}
 															style={
 																styles.searchListBox
 															}>
@@ -245,7 +251,7 @@ export default function SearchPage({ navigation, route }) {
 																}>
 																{tag}
 															</Text>
-														</View>
+														</Pressable>
 													</View>
 												),
 										)}
@@ -257,8 +263,12 @@ export default function SearchPage({ navigation, route }) {
 									crrSearchList.map(
 										(srch, index) =>
 											index <= 10 && (
-												<View
+												<Pressable
 													key={index}
+													onPress={() => {
+														setSearch(srch);
+														setCrrSearchList([]);
+													}}
 													style={{
 														position: "relative",
 														width: "100%",
@@ -295,7 +305,7 @@ export default function SearchPage({ navigation, route }) {
 															</Text>
 														</View>
 													</View>
-												</View>
+												</Pressable>
 											),
 									)}
 							</View>

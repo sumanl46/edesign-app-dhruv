@@ -21,12 +21,19 @@ import PopularsTemplates from "./components/popularTemplates";
 import TemplatesContainer from "./components/templates";
 
 import firestore from "@react-native-firebase/firestore";
+import { MainContext } from "../../contexts/MainContext";
 
 const { width: WIDTH } = Dimensions.get("screen");
 
 const HomePage = ({ navigation }) => {
 	const [newsData, setNewsData] = React.useState([]);
 	const [showModal, setShowModal] = React.useState(false);
+	const [showTabsModal, setShowTabsModal] = React.useState(false);
+	const [searchBg, setSearchBg] = React.useState(null);
+
+	const { tabs } = React.useContext(MainContext);
+
+	const BG = require("./assets/images/search-bg.png");
 
 	const loadNewsData = async () => {
 		const news = await firestore().collection("news").get();
@@ -38,8 +45,26 @@ const HomePage = ({ navigation }) => {
 		}
 	};
 
+	const loadSearchBg = async () => {
+		const response = await firestore()
+			.collection("search-bg")
+			.doc("bg")
+			.get();
+
+		if (response.exists) {
+			setSearchBg({ ...response.data() });
+		} else {
+			return;
+		}
+	};
+
 	React.useEffect(() => {
 		loadNewsData();
+		loadSearchBg();
+
+		return () => {
+			console.log("Closed");
+		};
 	}, []);
 
 	const NewsItem = ({ item }) => {
@@ -156,6 +181,73 @@ const HomePage = ({ navigation }) => {
 		);
 	};
 
+	const TabsView = () => {
+		return (
+			<View
+				style={{
+					flex: 1,
+					flexDirection: "row",
+					justifyContent: "flex-end",
+					alignItems: "center",
+					backgroundColor: "#00000030",
+				}}>
+				{/* Absolute touchable view */}
+				<TouchableOpacity
+					activeOpacity={1}
+					onPress={() => setShowTabsModal(false)}
+					style={[
+						StyleSheet.absoluteFillObject,
+						{
+							zIndex: 20,
+						},
+					]}></TouchableOpacity>
+
+				{/* Tabs View */}
+				<View
+					style={{
+						position: "relative",
+						zIndex: 40,
+						width: "70%",
+						height: "100%",
+						borderLeftWidth: 1,
+						borderLeftColor: "#F1F3F4",
+						backgroundColor: "#FFFFFF",
+					}}>
+					<ScrollView style={{ flex: 1 }}>
+						{tabs.map(tab => (
+							<TouchableOpacity
+								activeOpacity={0.7}
+								onPress={() =>
+									navigation.navigate("Search", {
+										tab: tab.key,
+									})
+								}
+								key={tab.key}
+								style={{
+									width: "100%",
+									height: "auto",
+									paddingVertical: 15,
+									paddingHorizontal: 25,
+									borderBottomWidth: 1,
+									borderBottomColor: "#F1F3F4",
+								}}>
+								<Text
+									style={{
+										textAlign: "left",
+										fontSize: 17,
+										fontWeight: "600",
+										color: "#000",
+									}}>
+									{tab.title}
+								</Text>
+							</TouchableOpacity>
+						))}
+					</ScrollView>
+				</View>
+			</View>
+		);
+	};
+
 	return (
 		<ScrollView
 			showsVerticalScrollIndicator={false}
@@ -180,8 +272,7 @@ const HomePage = ({ navigation }) => {
 							style={{
 								flex: 1,
 							}}
-							source={require("./assets/images/alexander-andrews-yOIT88xWkbg-unsplash.jpg")}
-							// "https://images.unsplash.com/photo-1488415032361-b7e238421f1b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
+							source={searchBg ? { uri: searchBg.uri } : BG}
 							resizeMethod="scale"
 							resizeMode="cover">
 							{/* Black Background */}
@@ -246,7 +337,7 @@ const HomePage = ({ navigation }) => {
 				{/* Bottom Part */}
 				<View style={styles.box}>
 					{/* Popular Templates */}
-					<PopularsTemplates />
+					<PopularsTemplates navigation={navigation} />
 
 					{/* Admob Custom */}
 					<AdmobView />
@@ -317,7 +408,10 @@ const HomePage = ({ navigation }) => {
 					</View>
 
 					{/* All Templates */}
-					<TemplatesContainer />
+					<TemplatesContainer
+						navigation={navigation}
+						showTabsModal={() => setShowTabsModal(true)}
+					/>
 				</View>
 			</View>
 
@@ -328,6 +422,15 @@ const HomePage = ({ navigation }) => {
 				onRequestClose={() => setShowModal(false)}
 				visible={showModal}>
 				<ModalView />
+			</Modal>
+
+			{/* Tabs Grid Modal */}
+			<Modal
+				transparent
+				animationType="fade"
+				onRequestClose={() => showTabsModal(false)}
+				visible={showTabsModal}>
+				<TabsView />
 			</Modal>
 		</ScrollView>
 	);

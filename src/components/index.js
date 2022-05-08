@@ -1,170 +1,45 @@
-import React, { useRef, useContext, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import {
-	Text,
-	View,
-	Dimensions,
-	StyleSheet,
-	ScrollView,
-	TouchableOpacity,
-	DrawerLayoutAndroid,
-} from "react-native";
 
 import HomePage from "./homePage";
-import { MainContext } from "../contexts/MainContext";
 import { SearchPage } from "./pages";
 import EditorPage from "./pages/editor";
-import AddText from "./pages/addText";
+import SaveImage from "./pages/saveImage";
 
 const Stack = createNativeStackNavigator();
-const WIDTH = Dimensions.get("screen").width;
-const DRAWER_WIDTH = (70 / 100) * WIDTH; // i.e 70% of the screen width
 
 export default function Container() {
-	const drawer = useRef(null);
-
-	const navigation = useNavigation();
-
-	const { drawerOpened, tabs, mainData } = useContext(MainContext);
-	const [contextData, setContextData] = mainData;
-
-	const navigationView = () => (
-		<View style={[styles.container, styles.navigationContainer]}>
-			<View style={styles.drawerTitleCont}>
-				<Text style={styles.drawerTitle}>All Templates</Text>
-			</View>
-
-			{/* Templates Tabs */}
-			<View
-				style={{
-					position: "relative",
-					width: "100%",
-					height: "90%",
-					overflow: "hidden",
-				}}>
-				<ScrollView style={{ flex: 1 }}>
-					{tabs.map((e, i) => (
-						<TouchableOpacity
-							key={i}
-							activeOpacity={0.7}
-							onPress={async () => {
-								await navigation.navigate("Search", {
-									tab: e.key,
-								});
-
-								drawer.current.closeDrawer();
-							}}
-							style={{
-								width: "100%",
-								height: "auto",
-								paddingVertical: 12,
-								paddingHorizontal: 25,
-								flexDirection: "row",
-								justifyContent: "space-between",
-								alignItems: "center",
-								borderBottomWidth: 1,
-								borderBottomColor: "lightgrey",
-							}}>
-							<Text
-								style={{
-									fontSize: 18,
-									fontWeight: "600",
-									color: "#000000AA",
-								}}>
-								{e.title}
-							</Text>
-						</TouchableOpacity>
-					))}
-				</ScrollView>
-			</View>
-		</View>
-	);
-
-	useEffect(() => {
-		if (drawerOpened) {
-			drawer.current.openDrawer();
-		} else {
-			drawer.current.closeDrawer();
-		}
-	}, [drawerOpened]);
-
 	return (
 		<>
-			<DrawerLayoutAndroid
-				ref={drawer}
-				drawerWidth={DRAWER_WIDTH}
-				drawerBackgroundColor={"#F1F3F4"}
-				drawerPosition={"left"}
-				onDrawerClose={() => {
-					setContextData({
-						...contextData,
-						drawerOpened: false,
-					});
-				}}
-				renderNavigationView={navigationView}>
-				<Stack.Navigator initialRouteName="Editor">
-					{/* Home Page */}
-					<Stack.Screen
-						name="Home"
-						component={HomePage}
-						options={{ headerShown: false }}
-					/>
+			<Stack.Navigator initialRouteName="Home">
+				{/* Home Page */}
+				<Stack.Screen
+					name="Home"
+					component={HomePage}
+					options={{ headerShown: false }}
+				/>
 
-					{/* Search Page */}
-					<Stack.Screen
-						name="Search"
-						component={SearchPage}
-						options={{ headerShown: false }}
-					/>
+				{/* Search Page */}
+				<Stack.Screen
+					name="Search"
+					component={SearchPage}
+					options={{ headerShown: false }}
+				/>
 
-					{/* Editor Page */}
-					<Stack.Screen
-						name="Editor"
-						initialParams={{
-							template: {
-								image: "https://wallpaperaccess.com/full/1204217.jpg",
-							},
-						}}
-						component={EditorPage}
-						options={{ headerShown: false }}
-					/>
+				{/* Editor Page */}
+				<Stack.Screen
+					name="Editor"
+					component={EditorPage}
+					options={{ headerShown: false }}
+				/>
 
-					{/* Add Text Page */}
-					<Stack.Screen
-						name="AddText"
-						component={AddText}
-						options={{ headerShown: false }}
-					/>
-				</Stack.Navigator>
-			</DrawerLayoutAndroid>
+				{/* Add Text Page */}
+				<Stack.Screen
+					name="SaveImage"
+					component={SaveImage}
+					options={{ headerShown: false }}
+				/>
+			</Stack.Navigator>
 		</>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	},
-	navigationContainer: {
-		backgroundColor: "#ecf0f1",
-	},
-	drawerTitleCont: {
-		position: "relative",
-		width: "100%",
-		height: "10%",
-		paddingHorizontal: 15,
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-		borderBottomWidth: 1,
-		borderBottomColor: "grey",
-	},
-	drawerTitle: {
-		fontSize: 20,
-		textAlign: "left",
-		fontWeight: "700",
-		color: "#000",
-		paddingHorizontal: 10,
-	},
-});
