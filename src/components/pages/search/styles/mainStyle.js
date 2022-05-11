@@ -5,15 +5,16 @@ const { height: H, width: W } = Dimensions.get("screen");
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: "#FFF",
 	},
 	searchBarContainer: {
 		position: "relative",
 		width: "100%",
-		height: "auto",
+		height: 50,
 	},
 	searchBar: {
 		width: "100%",
-		height: 50,
+		height: "100%",
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
@@ -21,7 +22,10 @@ const styles = StyleSheet.create({
 		borderBottomColor: "lightgrey",
 	},
 	searchListContainer: {
-		position: "relative",
+		position: "absolute",
+		zIndex: 50,
+		left: 0,
+		top: 50,
 		width: "100%",
 		height: "auto",
 		borderBottomWidth: 1,
@@ -64,7 +68,10 @@ const styles = StyleSheet.create({
 		color: "#000",
 	},
 	crrSearchLists: {
-		position: "relative",
+		position: "absolute",
+		zIndex: 40,
+		left: 0,
+		top: 50,
 		width: "100%",
 		height: "auto",
 		flexDirection: "column",
@@ -75,14 +82,14 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	backBtn: {
-		width: "15%",
+		width: "20%",
 		height: "100%",
 		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
 	},
 	textInputContainer: {
-		width: "65%",
+		width: "60%",
 		height: "100%",
 	},
 	textInputText: {
@@ -126,16 +133,18 @@ const styles = StyleSheet.create({
 		borderRadius: 24,
 	},
 	flatListContainer: {
+		position: "relative",
 		width: "100%",
 		height: H - StatusBar.currentHeight - 50,
 		backgroundColor: "transparent",
 	},
 	renderedBoxesContainer: {
-		flex: 1,
+		position: "relative",
 		flexDirection: "row",
 		flexWrap: "wrap",
+		alignItems: "flex-start",
 		justifyContent: "flex-start",
-		backgroundColor: "#F1F3F4",
+		backgroundColor: "#FFF",
 	},
 	renderedBox: {
 		padding: 5,

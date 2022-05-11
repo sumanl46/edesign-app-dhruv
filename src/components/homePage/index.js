@@ -217,11 +217,13 @@ const HomePage = ({ navigation }) => {
 						{tabs.map(tab => (
 							<TouchableOpacity
 								activeOpacity={0.7}
-								onPress={() =>
+								onPress={() => {
+									setShowTabsModal(false);
+
 									navigation.navigate("Search", {
 										tab: tab.key,
-									})
-								}
+									});
+								}}
 								key={tab.key}
 								style={{
 									width: "100%",
@@ -301,11 +303,11 @@ const HomePage = ({ navigation }) => {
 								<TouchableOpacity
 									style={styles.search}
 									activeOpacity={0.9}
-									onPress={() =>
+									onPress={() => {
 										navigation.navigate("Search", {
-											tab: "",
-										})
-									}>
+											tab: tabs[0].key,
+										});
+									}}>
 									{/* Search Icon Container */}
 									<View
 										style={{
