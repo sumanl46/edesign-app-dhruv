@@ -168,7 +168,7 @@ export function MainContextProvider({ children }) {
 	return (
 		<MainContext.Provider
 			value={{
-				tabs: contextData.tabs,
+				tabs: tabs,
 				textData: [textProps, setTextProps],
 				mainData: [contextData, setContextData],
 			}}>

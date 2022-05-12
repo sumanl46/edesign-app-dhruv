@@ -1,8 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
 	Text,
 	View,
 	Image,
+	Linking,
 	Pressable,
 	StatusBar,
 	StyleSheet,
@@ -34,13 +35,51 @@ export default function TemplatesContainer({ navigation, showTabsModal }) {
 
 		if (templates.empty) return;
 		else {
-			setAllTemplates(
-				templates.docs.map(doc => ({
-					...doc.data(),
-					id: doc.id,
-					ad: false,
-				})),
-			);
+			const ads = await firestore()
+				.collection("ads")
+				.where("pinned", "==", false)
+				.get();
+
+			if (ads.empty) {
+				setAllTemplates(
+					templates.docs.map(doc => ({
+						...doc.data(),
+						id: doc.id,
+						ad: false,
+					})),
+				);
+			} else {
+				let __allTemplates = [];
+				let pos = 4;
+				let adIndex = 0;
+				templates.docs.forEach((t, id) => {
+					if (id == pos) {
+						if (adIndex >= ads.docs.length) {
+							adIndex = 0;
+						}
+						__allTemplates.push({
+							...ads.docs[adIndex].data(),
+							ad: true,
+						});
+						__allTemplates.push({
+							...t.data(),
+							id: t.id,
+							ad: false,
+						});
+
+						pos += 4;
+						adIndex += 1;
+					} else {
+						__allTemplates.push({
+							...t.data(),
+							id: t.id,
+							ad: false,
+						});
+					}
+				});
+
+				setAllTemplates([...__allTemplates]);
+			}
 		}
 	};
 
@@ -134,7 +173,7 @@ export default function TemplatesContainer({ navigation, showTabsModal }) {
 								<View style={styles.adBox} key={template.id}>
 									<View style={styles.box}>
 										<Image
-											source={{ uri: template.image }}
+											source={{ uri: template.thumbnail }}
 											resizeMethod="auto"
 											resizeMode="cover"
 											style={{
@@ -149,7 +188,20 @@ export default function TemplatesContainer({ navigation, showTabsModal }) {
 
 										<TouchableOpacity
 											activeOpacity={0.7}
-											onPress={() => {}}
+											onPress={async () => {
+												const isUrl =
+													await Linking.canOpenURL(
+														template.link,
+													);
+
+												if (isUrl) {
+													await Linking.openURL(
+														template.link,
+													);
+												} else {
+													alert("Failed to open url");
+												}
+											}}
 											style={{
 												position: "relative",
 												zIndex: 20,

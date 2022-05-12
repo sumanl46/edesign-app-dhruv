@@ -7,13 +7,15 @@
  */
 
 import React from "react";
-import { SafeAreaView, StatusBar, StyleSheet } from "react-native";
+import { LogBox, SafeAreaView, StatusBar, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import "react-native-gesture-handler";
 
 import { MainContextProvider } from "./src/contexts/MainContext";
 import Container from "./src/components";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+LogBox.ignoreAllLogs();
 
 const App = () => {
 	return (

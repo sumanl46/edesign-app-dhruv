@@ -19,7 +19,6 @@ import firestore from "@react-native-firebase/firestore";
 import Feather from "react-native-vector-icons/Feather";
 import { styles } from "./styles/mainStyle";
 import { MainContext } from "../../../contexts/MainContext";
-import { templates } from "./templates";
 
 export default function SearchPage({ navigation, route }) {
 	const { tabs } = React.useContext(MainContext);
@@ -27,6 +26,8 @@ export default function SearchPage({ navigation, route }) {
 	const searchRef = useRef(null);
 
 	const [search, setSearch] = useState("");
+
+	const [firstSearch, setFirstSearch] = useState(false);
 
 	const [showTabsModal, setShowTabsModal] = useState(false);
 	const [showPopularSearch, setShowPopularSearch] = useState(false);
@@ -43,6 +44,7 @@ export default function SearchPage({ navigation, route }) {
 
 		let tags = [];
 		if (response.empty) {
+			// __templates.length <= 0
 			return;
 		} else {
 			response.docs.map(doc => {
@@ -50,13 +52,18 @@ export default function SearchPage({ navigation, route }) {
 
 				tags = tags.concat(_tgs);
 			});
+			// __templates.map(temp => {
+			// 	const { tags: __tags } = temp;
+
+			// 	tags = tags.concat(__tags);
+			// });
 		}
 
 		let __allTags = [];
 		if (tags.length > 0) {
 			tags.forEach(tag => {
 				if (__allTags.indexOf(tag) === -1) {
-					__allTags.push(tag.toLowerCase());
+					__allTags.push(tag);
 				} else {
 					return;
 				}
@@ -64,11 +71,11 @@ export default function SearchPage({ navigation, route }) {
 		}
 
 		setAllTags([...__allTags]);
-		// setAllTemplates(
-		// 	response.docs.map(doc => ({ ...doc.data(), id: doc.id })),
-		// );
+		setAllTemplates(
+			response.docs.map(doc => ({ ...doc.data(), id: doc.id })),
+		);
 
-		setAllTemplates([...templates]);
+		// setAllTemplates([...__templates]);
 	};
 
 	const getPopularSearches = async () => {
@@ -82,6 +89,41 @@ export default function SearchPage({ navigation, route }) {
 		} else {
 			return;
 		}
+
+		// setPopularSearches([])
+		// let tags = [];
+		// if (response.exists) {
+		// 	// response.empty
+		// 	return;
+		// } else {
+		// 	response.docs.map(doc => {
+		// 		const { tags: _tgs } = doc.data();
+
+		// 		tags = tags.concat(_tgs);
+		// 	});
+		// 	__templates.map(temp => {
+		// 		if (temp.popular) {
+		// 			const { tags: __tags } = temp;
+
+		// 			tags = tags.concat(__tags);
+		// 		}
+		// 	});
+		// }
+
+		// let __allTags = [];
+		// if (tags.length > 0) {
+		// 	tags.forEach((tag, itr) => {
+		// 		if (itr <= 15) {
+		// 			if (__allTags.indexOf(tag) === -1) {
+		// 				__allTags.push(tag);
+		// 			} else {
+		// 				return;
+		// 			}
+		// 		}
+		// 	});
+		// }
+
+		// setPopularSearches({ tags: [...__allTags] });
 	};
 
 	const searchTemplates = (searchedKey, tab) => {
@@ -92,7 +134,7 @@ export default function SearchPage({ navigation, route }) {
 			});
 		} else {
 			results = allTemplates.filter(template => {
-				return template.tags.indexOf(searchedKey.toLowerCase()) > -1;
+				return template.tags.indexOf(searchedKey) > -1;
 			});
 		}
 
@@ -112,9 +154,6 @@ export default function SearchPage({ navigation, route }) {
 		const { tab: k } = route.params;
 
 		setSearch(k);
-
-		searchTemplates(search, false);
-
 		setShowPopularSearch(false);
 		setCrrSearchList([]);
 		getPopularSearches();
@@ -124,6 +163,22 @@ export default function SearchPage({ navigation, route }) {
 			console.log("Closed");
 		};
 	}, []);
+
+	useEffect(() => {
+		if (allTemplates.length > 0) {
+			if (firstSearch) {
+				return;
+			} else {
+				searchTemplates(search, true);
+
+				setFirstSearch(true);
+			}
+		}
+
+		return () => {
+			console.log("Done Downloading");
+		};
+	}, [allTemplates]);
 
 	const TabsView = () => {
 		return (
@@ -249,17 +304,25 @@ export default function SearchPage({ navigation, route }) {
 									returnKeyType="search"
 									autoFocus
 									defaultValue={search}
-									onSubmitEditing={({ nativeEvent }) =>
-										searchTemplates(nativeEvent.text, false)
-									}
+									onSubmitEditing={({ nativeEvent }) => {
+										searchTemplates(
+											nativeEvent.text,
+											false,
+										);
+
+										setCrrSearchList([]);
+									}}
 									onChangeText={e => {
 										setSearch(e);
 
 										const searchesLists = allTags.filter(
 											t => {
 												return (
-													t.indexOf(e.toLowerCase()) >
-													-1
+													t
+														.toLowerCase()
+														.indexOf(
+															e.toLowerCase(),
+														) > -1
 												);
 											},
 										);
@@ -292,10 +355,14 @@ export default function SearchPage({ navigation, route }) {
 							</View>
 
 							{/* Search Text */}
-							<Pressable
+							<TouchableOpacity
+								activeOpacity={0.6}
 								style={styles.searchTextContainer}
 								onPress={() => {
-									searchTemplates(search, false);
+									{
+										searchTemplates(search, false);
+										setCrrSearchList([]);
+									}
 								}}>
 								<Text
 									style={[
@@ -309,173 +376,144 @@ export default function SearchPage({ navigation, route }) {
 									]}>
 									Search
 								</Text>
-								{/* <View
-									style={{
-										position: "absolute",
-										width: "100%",
-										height: "100%",
-										left: 0,
-										top: 0,
-										zIndex: 80,
-										flexDirection: "row",
-										justifyContent: "center",
-										alignItems: "center",
-										backgroundColor: "#00000070",
-									}}>
-									<ActivityIndicator
-										size={50}
-										color={"#3498DB"}
-									/>
-								</View> */}
-							</Pressable>
+							</TouchableOpacity>
+						</View>
 
-							{showPopularSearch && (
-								<View style={styles.searchListContainer}>
-									{/* Title */}
-									<View style={styles.searchTitleContainer}>
-										<Text style={styles.searchTitleText}>
-											Popular Searches
-										</Text>
-									</View>
-
-									{/* Lists */}
-									<View style={styles.searchLists}>
-										{popularSearches &&
-											popularSearches.tags.map(
-												(tag, index) =>
-													index <= 10 && (
-														<View
-															key={index}
-															style={{
-																position:
-																	"relative",
-																width: "auto",
-																height: "auto",
-																padding: 4,
-															}}>
-															<Pressable
-																onPress={() => {
-																	Keyboard.dismiss();
-																	setSearch(
-																		tag,
-																	);
-																	searchTemplates(
-																		tag,
-																		true,
-																	);
-																	setCrrSearchList(
-																		[],
-																	);
-
-																	console.log(
-																		tag,
-																	);
-																}}
-																style={
-																	styles.searchListBox
-																}>
-																<Text
-																	style={
-																		styles.searchListBoxText
-																	}>
-																	{tag}
-																</Text>
-															</Pressable>
-														</View>
-													),
-											)}
-									</View>
+						{/* List Of some popular searches */}
+						{showPopularSearch && (
+							<View style={styles.searchListContainer}>
+								{/* Title */}
+								<View style={styles.searchTitleContainer}>
+									<Text style={styles.searchTitleText}>
+										Popular Searches
+									</Text>
 								</View>
-							)}
 
-							{/* Recent Search List */}
-							{search.length > 0 && (
-								<View style={styles.crrSearchLists}>
-									{crrSearchList.length > 0 &&
-										crrSearchList.map(
-											(srch, index) =>
+								{/* Lists */}
+								<View style={styles.searchLists}>
+									{popularSearches &&
+										popularSearches.tags.map(
+											(tag, index) =>
 												index <= 10 && (
-													<Pressable
+													<View
 														key={index}
-														onPress={() => {
-															Keyboard.dismiss();
-															setSearch(srch);
-															searchTemplates(
-																srch,
-																true,
-															);
-															setCrrSearchList(
-																[],
-															);
-														}}
 														style={{
 															position:
 																"relative",
-															width: "100%",
+															width: "auto",
 															height: "auto",
-															paddingVertical: 8,
-															paddingHorizontal: 25,
-															borderBottomWidth: 1,
-															borderBottomColor:
-																"#F1F3F4",
-															backgroundColor:
-																"#FFF",
+															padding: 4,
 														}}>
+														<Pressable
+															onPress={() => {
+																Keyboard.dismiss();
+																setSearch(tag);
+																searchTemplates(
+																	tag,
+																	false,
+																);
+																setCrrSearchList(
+																	[],
+																);
+															}}
+															style={
+																styles.searchListBox
+															}>
+															<Text
+																style={
+																	styles.searchListBoxText
+																}>
+																{tag.toLowerCase()}
+															</Text>
+														</Pressable>
+													</View>
+												),
+										)}
+								</View>
+							</View>
+						)}
+
+						{/* Recent Search List */}
+						{search.length > 0 && (
+							<View style={styles.crrSearchLists}>
+								{crrSearchList.length > 0 &&
+									crrSearchList.map(
+										(srch, index) =>
+											index <= 10 && (
+												<Pressable
+													key={index}
+													onPress={() => {
+														Keyboard.dismiss();
+
+														setSearch(srch);
+
+														searchTemplates(
+															srch,
+															false,
+														);
+														setCrrSearchList([]);
+													}}
+													style={{
+														position: "relative",
+														width: "100%",
+														height: "auto",
+														paddingVertical: 8,
+														paddingHorizontal: 25,
+														borderBottomWidth: 1,
+														borderBottomColor:
+															"#F1F3F4",
+														backgroundColor: "#FFF",
+													}}>
+													<View
+														style={
+															styles.crrSearchListBox
+														}>
 														<View
 															style={
 																styles.crrSearchListBox
 															}>
-															<View
-																style={
-																	styles.crrSearchListBox
-																}>
-																<Feather
-																	name="search"
-																	size={22}
-																	color="#888"
-																/>
+															<Feather
+																name="search"
+																size={22}
+																color="#888"
+															/>
 
-																<Text
-																	style={[
-																		styles.searchListBoxText,
-																		{
-																			marginLeft: 20,
-																		},
-																	]}>
-																	{srch}
-																</Text>
-															</View>
+															<Text
+																style={[
+																	styles.searchListBoxText,
+																	{
+																		marginLeft: 20,
+																	},
+																]}>
+																{srch.toLowerCase()}
+															</Text>
 														</View>
-													</Pressable>
-												),
-										)}
-								</View>
-							)}
-						</View>
-
-						{/* Tabs Grid Modal */}
-						<Modal
-							transparent
-							animationType="fade"
-							onRequestClose={() => showTabsModal(false)}
-							visible={showTabsModal}>
-							<TabsView />
-						</Modal>
+													</View>
+												</Pressable>
+											),
+									)}
+							</View>
+						)}
 					</View>
 
 					{/* FlatList below search bar */}
 					{/* Searched Templates List */}
 					<View style={styles.flatListContainer}>
-						<ScrollView style={{ flex: 1 }}>
-							<View style={styles.renderedBoxesContainer}>
-								{searchedTemplates.length > 0 &&
-									searchedTemplates.map(item => (
-										<View
+						{searchedTemplates.length > 0 ? (
+							<ScrollView style={{ flex: 1 }}>
+								<View style={styles.renderedBoxesContainer}>
+									{searchedTemplates.map(item => (
+										<Pressable
+											onPress={() =>
+												navigation.navigate("Editor", {
+													template: item,
+												})
+											}
 											style={styles.renderedBox}
 											key={item.id}>
 											<View style={styles.box}>
 												<Image
-													source={require("../../homePage/assets/images/aleksey-kuprikov-sKJH-nRnthg-unsplash.jpg")}
+													source={{ uri: item.image }}
 													resizeMethod="auto"
 													resizeMode="cover"
 													style={
@@ -483,13 +521,51 @@ export default function SearchPage({ navigation, route }) {
 													}
 												/>
 											</View>
-										</View>
+										</Pressable>
 									))}
+								</View>
+							</ScrollView>
+						) : (
+							<View
+								style={{
+									flex: 1,
+									justifyContent: "center",
+									alignItems: "center",
+								}}>
+								<View
+									style={{
+										flexDirection: "column",
+										alignItems: "center",
+									}}>
+									<Feather
+										name="search"
+										size={54}
+										color="#999"
+									/>
+
+									<Text
+										style={{
+											marginTop: 20,
+											fontSize: 20,
+											fontWeight: "600",
+											color: "#888",
+										}}>
+										Not Found
+									</Text>
+								</View>
 							</View>
-						</ScrollView>
+						)}
 					</View>
 				</View>
 			</TouchableWithoutFeedback>
+			{/* Tabs Grid Modal */}
+			<Modal
+				transparent
+				animationType="fade"
+				onRequestClose={() => showTabsModal(false)}
+				visible={showTabsModal}>
+				<TabsView />
+			</Modal>
 		</KeyboardAvoidingView>
 	);
 }

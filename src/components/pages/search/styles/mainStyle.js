@@ -13,8 +13,9 @@ const styles = StyleSheet.create({
 		height: 50,
 	},
 	searchBar: {
+		position: "relative",
 		width: "100%",
-		height: "100%",
+		height: 50,
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
