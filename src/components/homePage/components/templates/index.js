@@ -19,7 +19,8 @@ const STATUSBAR_HEIGHT = StatusBar.currentHeight;
 
 const SCROLLVIEW_HEIGHT = HEIGHT - STATUSBAR_HEIGHT - 20; // 20 is for padding vertical of 10-10
 const SCROLLVIEW_WIDTH = WIDTH - 40; // 40 is for padding horizontal of 20-20
-const SCROLLVIEW_WIDTH_HALF = SCROLLVIEW_WIDTH / 2;
+const R = (10 / 100) * WIDTH;
+const SCROLLVIEW_WIDTH_HALF = SCROLLVIEW_WIDTH / 2 + R;
 
 // const COLOR = "#006ae9";
 

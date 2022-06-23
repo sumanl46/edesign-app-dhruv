@@ -13,100 +13,6 @@ export function MainContextProvider({ children }) {
 		tabs: [],
 	});
 
-	const tabs = [
-		{
-			id: "06VLWJUdJdwPLLzTK5hy",
-			key: "congratulation",
-			orderId: 4,
-			title: "Congratulation",
-		},
-		{
-			id: "0KPhKiPwbbBgrR1jfVaP",
-			key: "buddhashanti",
-			orderId: 0,
-			title: "Buddhashanti",
-		},
-		{
-			id: "41bNISSkuCHywWGI44HH",
-			key: "designs",
-			orderId: 7,
-			title: "Designs",
-		},
-		{
-			id: "BIY2VcECFKgEW80PXaSN",
-			key: "sports",
-			orderId: 1,
-			title: "Sports",
-		},
-		{
-			id: "ERYr4HsyXDdGI3Avm1s3",
-			key: "anniversary",
-			orderId: 5,
-			title: "Anniversary",
-		},
-		{
-			id: "FIcZpsty9EXcXVlc3SZt",
-			key: "quotes",
-			orderId: 2,
-			title: "Quotes",
-		},
-		{
-			id: "IoTZILqMWmWDdzZJ13LY",
-			key: "business",
-			orderId: 4,
-			title: "Business",
-		},
-		{
-			id: "NRDTi9IPSfNS7IMKLqKx",
-			key: "samabedana",
-			orderId: 2,
-			title: "Samabedana",
-		},
-		{
-			id: "VfEOHqxA6QWdrotaCeKM",
-			key: "new-year",
-			orderId: 1,
-			title: "New Year",
-		},
-		{
-			id: "aTAW7WtylhZtWE4cgLol",
-			key: "shivaratri",
-			orderId: 1,
-			title: "Shivaratri",
-		},
-		{
-			id: "bOTO4bFt6sdhqnKSzK6k",
-			key: "birthday",
-			orderId: 3,
-			title: "Birthday",
-		},
-		{
-			id: "h5rfJ7arq9TbXzDBowCY",
-			key: "election-2079",
-			orderId: 0,
-			title: "Election 2079",
-		},
-		{
-			id: "i8BYTUa4UvyMXYoBg6T5",
-			key: "nari-diwas",
-			orderId: 1,
-			title: "Nari Diwas",
-		},
-		{
-			id: "qL1H1RHZteJIrkcXX2NB",
-			key: "ram-nawami",
-			orderId: 0,
-			title: "Ram Nawami",
-		},
-		{ id: "yWJ57K1QhDbLRFD4vNvs", key: "holi", orderId: 0, title: "Holi" },
-		{
-			id: "zbkDXaTbznWuQe9zh4FC",
-			key: "profile-frame",
-			orderId: 0,
-			title: "Profile Frame",
-		},
-	];
-
 	const [textProps, setTextProps] = useState([]);
 
 	const loadTabs = async () => {
@@ -168,7 +74,7 @@ export function MainContextProvider({ children }) {
 	return (
 		<MainContext.Provider
 			value={{
-				tabs: tabs,
+				tabs: contextData.tabs,
 				textData: [textProps, setTextProps],
 				mainData: [contextData, setContextData],
 			}}>

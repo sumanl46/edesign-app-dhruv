@@ -245,6 +245,12 @@ export default function EditorPage({ navigation, route }) {
 
 		setTextProps(__textProps);
 		setTextUpdate(false);
+
+		setTextAdded({
+			...textAdded,
+			added: false,
+			text: null,
+		});
 	};
 
 	// ON pressed text,
@@ -290,54 +296,6 @@ export default function EditorPage({ navigation, route }) {
 			});
 		};
 	}, [navigation]);
-
-	// const [overImageCalc, setOverImageCalc] = useState({
-	// 	calculated: true,
-	// 	width: 0,
-	// 	height: 0,
-	// });
-	// Calculate the size of the image before it renders,
-	// useEffect(() => {
-	// 	if (contextData.overImage) {
-	// 		// Now here we are calculating the image size and set it to the desired size,
-	// 		Image.getSize(contextData.overImage.uri, (width, height) => {
-	// 			const diff = width - height;
-	// 			let __width = 150;
-	// 			let __height = 150;
-
-	// 			if (diff >= 10) {
-	// 				if (diff >= 50 && diff <= 400) {
-	// 					__width = 200;
-	// 				} else if (diff >= 400 && diff <= 800) {
-	// 					__height += 20;
-	// 					__width = 250;
-	// 				} else {
-	// 					__height += 50;
-	// 					__width = 300;
-	// 				}
-	// 			} else if (diff <= -10) {
-	// 				if (diff <= -50 && diff >= -400) {
-	// 					__height = 200;
-	// 				} else if (diff <= -400 && diff >= -800) {
-	// 					__width += 20;
-	// 					__height = 250;
-	// 				} else {
-	// 					__width += 50;
-	// 					__height = 300;
-	// 				}
-	// 			}
-
-	// 			setOverImageCalc({
-	// 				...overImageCalc,
-	// 				calculated: true,
-	// 				width: __width,
-	// 				height: __height,
-	// 			});
-	// 		});
-	// 	} else {
-	// 		return;
-	// 	}
-	// }, [contextData.overImage]);
 
 	const calcImgHeight = async (_w, _h) => {
 		const DIFF = MAIN_CONT_HEIGHT - WIDTH;
@@ -611,7 +569,6 @@ export default function EditorPage({ navigation, route }) {
 								setAdd(true);
 								setTextAdded({
 									...textAdded,
-									id: null,
 									text: null,
 									added: false,
 								});
