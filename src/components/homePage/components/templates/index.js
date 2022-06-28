@@ -39,6 +39,7 @@ export default function TemplatesContainer({ navigation, showTabsModal }) {
 			const ads = await firestore()
 				.collection("ads")
 				.where("pinned", "==", false)
+				.orderBy("createdAt", "desc")
 				.get();
 
 			if (ads.empty) {

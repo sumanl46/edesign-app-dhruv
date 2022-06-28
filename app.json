@@ -1,4 +1,8 @@
 {
-  "name": "Edesign",
-  "displayName": "Edesign"
+	"name": "Edesign",
+	"displayName": "Edesign",
+	"react-native": {
+		"admob_android_app_id": "ca-app-pub-9113830558683757~1775114506",
+		"admob_ios_app_id": ""
+	}
 }
